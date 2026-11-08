@@ -1,7 +1,7 @@
 from langchain_chroma import Chroma
 from src.config import CHROMA_DIR
 from tqdm import tqdm
-
+from src.metadata_enricher import generate_metadata
 # ==============================
 # BANCO VETORIAL
 # ==============================
@@ -41,6 +41,39 @@ def store_chunks(vectorstore, chunks):
     else:
 
         print(f"Banco existente: {count} documentos.")
+
+def enrich_chunks(chunks):
+    """Enriquece os chunks com metadados semânticos."""
+
+    print("\nIniciando geração de metadados...\n")
+
+    ignored_metadata = [
+        "creator",
+        "producer",
+        "creationdate",
+        "page_label",
+        "total_pages"
+    ]
+
+    for i, chunk in enumerate(
+        tqdm(chunks, desc="Gerando metadados", unit="chunk"),
+        start=1
+    ):
+        # Remove metadados técnicos desnecessários
+        for key in ignored_metadata:
+            chunk.metadata.pop(key, None)
+        # Gera metadados semânticos
+        semantic_metadata = generate_metadata(
+            chunk.page_content
+        )
+
+        chunk.metadata.update(semantic_metadata)
+
+
+    print("\n[INFO] Metadados gerados com sucesso!")
+    print(f"[INFO] Total de chunks enriquecidos: {len(chunks)}")
+
+    return chunks
 
 
 # ==============================

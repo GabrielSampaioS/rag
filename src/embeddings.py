@@ -9,12 +9,27 @@ from src.config import CHUNK_SIZE, CHUNK_OVERLAP, EMBEDDING_MODEL
 def split_documents(documents):
     """Divide os documentos em chunks."""
 
+    print("\nIniciando divisão dos documentos em chunks...\n")
+
+    ignored_metadata = [
+        "creator",
+        "producer",
+        "creationdate",
+        "page_label",
+        "total_pages"
+    ]
+
     splitter = RecursiveCharacterTextSplitter(
         chunk_size=CHUNK_SIZE,
         chunk_overlap=CHUNK_OVERLAP
     )
 
-    return splitter.split_documents(documents)
+    chunks = splitter.split_documents(documents)
+
+    print(f"[INFO] Documentos recebidos: {len(documents)}")
+    print(f"[INFO] Chunks gerados: {len(chunks)}")
+
+    return chunks
 
 
 def show_chunk_info(documents, chunks):
