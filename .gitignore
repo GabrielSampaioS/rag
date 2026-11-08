@@ -1,0 +1,37 @@
+
+# Ambiente virtual
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Variáveis de ambiente
+.env
+.env.*
+
+# Cache e testes
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Distribuição
+build/
+dist/
+*.egg-info/
+
+# IDE e editor
+.vscode/
+.idea/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Bancos vetoriais e dados gerados
+chroma_cover_letter/
