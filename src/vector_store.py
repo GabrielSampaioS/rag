@@ -1,7 +1,19 @@
+from typing import Any
+
 from langchain_chroma import Chroma
-from src.config import CHROMA_DIR
+from langchain_core.documents import Document
+from langchain_core.retrievers import BaseRetriever
+from pydantic import ConfigDict
 from tqdm import tqdm
-from src.metadata_enricher import generate_metadata
+
+from src.config import CHROMA_DIR
+from src.metadata_classifier import (
+    enrich_chunks as apply_semantic_metadata,
+    retrieve_with_filter,
+)
+
+from src.helper.print_section import print_info, print_subsection
+
 # ==============================
 # BANCO VETORIAL
 # ==============================
@@ -22,7 +34,7 @@ def store_chunks(vectorstore, chunks):
 
     if count == 0:
 
-        print("\nBanco vazio. Gerando embeddings...\n")
+        print_info("Banco vazio. Gerando embeddings")
 
         batch_size = 10
 
@@ -36,16 +48,17 @@ def store_chunks(vectorstore, chunks):
 
             vectorstore.add_documents(batch)
 
-        print("\nEmbeddings armazenados com sucesso!")
+        print_info("Embeddings armazenados com sucesso!")
 
     else:
 
-        print(f"Banco existente: {count} documentos.")
+        print_info(f"Banco existente: {count} documentos.")
+
 
 def enrich_chunks(chunks):
     """Enriquece os chunks com metadados semânticos."""
 
-    print("\nIniciando geração de metadados...\n")
+    print_info("Iniciando geração de metadados...")
 
     ignored_metadata = [
         "creator",
@@ -55,35 +68,37 @@ def enrich_chunks(chunks):
         "total_pages"
     ]
 
-    for i, chunk in enumerate(
-        tqdm(chunks, desc="Gerando metadados", unit="chunk"),
-        start=1
-    ):
-        # Remove metadados técnicos desnecessários
+    # Remove metadados técnicos desnecessários
+    for chunk in chunks:
         for key in ignored_metadata:
             chunk.metadata.pop(key, None)
-        # Gera metadados semânticos
-        semantic_metadata = generate_metadata(
-            chunk.page_content
-        )
 
-        chunk.metadata.update(semantic_metadata)
+    # Classifica todos os chunks de uma vez, na ordem do splitter
+    chunks = apply_semantic_metadata(chunks)
 
-
-    print("\n[INFO] Metadados gerados com sucesso!")
-    print(f"[INFO] Total de chunks enriquecidos: {len(chunks)}")
+    print_info("Metadados gerados com sucesso!")
+    print_info(f"Total de chunks enriquecidos: {len(chunks)}")
 
     return chunks
 
 
 # ==============================
-# RETRIEVER 
+# RETRIEVER
 # ==============================
 
-def create_retriever(vectorstore):
-    """Cria mecanismo de recuperação por similaridade."""
-    
-    return vectorstore.as_retriever(
-        search_type="similarity",
-        search_kwargs={"k": 3}
-    )
+
+class FilteredRetriever(BaseRetriever):
+    """Busca nas categorias prováveis da pergunta e completa com busca normal."""
+
+    vectorstore: Any
+    k: int = 6
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+    def _get_relevant_documents(self, query: str, *, run_manager) -> list[Document]:
+        return retrieve_with_filter(self.vectorstore, query, k=self.k)
+
+
+def create_retriever(vectorstore, k=6):
+    """Cria mecanismo de recuperação com filtro por categoria."""
+
+    return FilteredRetriever(vectorstore=vectorstore, k=k)

@@ -1,16 +1,17 @@
 from pathlib import Path
 import chromadb
 
+from src.helper.print_section import print_info, print_subsection
+
 # Raiz do projeto (diretório acima de src)
 BASE_DIR = Path(__file__).resolve().parent.parent
 # Banco vetorial
 CHROMA_DIR = BASE_DIR / "data" / "vector_store" / "chroma"
 
 def verificar_banco():
-    print(CHROMA_DIR)
 
-    print("\n========== VERIFICAÇÃO DO CHROMADB ==========")
-    print(f"Caminho do banco: {CHROMA_DIR}")
+    print_subsection("\n========== VERIFICAÇÃO DO CHROMADB ==========")
+    print_info(f"Caminho do banco: {CHROMA_DIR}")
 
     client = chromadb.PersistentClient(
         path=str(CHROMA_DIR)
@@ -18,7 +19,7 @@ def verificar_banco():
 
     colecoes = client.list_collections()
 
-    print(f"\nTotal de coleções: {len(colecoes)}")
+    print_info(f"Total de coleções: {len(colecoes)}")
 
     for colecao in colecoes:
 

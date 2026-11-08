@@ -14,8 +14,7 @@ def main():
     documents = load_documents()
     chunks = split_documents(documents)
     chunks = enrich_chunks(chunks)
-    #show_chunk_info(documents, chunks)
-  
+    # show_chunk_info(documents, chunks)
 
     # 2. Criar embeddings
     print_subsection("[2/4] Preparando embeddings...")
@@ -24,10 +23,8 @@ def main():
     # 3. Criar banco vetorial e retriever
     print_subsection("[3/4] Preparando banco vetorial...")
     vectorstore = create_vector_store(embeddings)
-    store_chunks(vectorstore, chunks)
-    vectorstore.add_documents(chunks)
-    retriever = create_retriever(vectorstore)
-    
+    store_chunks(vectorstore, chunks)  # só insere se o banco estiver vazio
+    retriever = create_retriever(vectorstore, k=8)
 
     # 4. Construir cadeia de perguntas
     print_subsection("[4/4] Construindo QA Chain...")
@@ -45,7 +42,7 @@ def main():
             break
 
         ask_and_print(qa_chain, pergunta)
-    return
+
 
 if __name__ == "__main__":
     main()

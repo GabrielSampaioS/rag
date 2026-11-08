@@ -2,6 +2,9 @@ from langchain_community.document_loaders import PyPDFLoader
 from pathlib import Path
 import re
 
+from src.helper import print_section
+from src.helper.print_section import print_info
+
 # ==============================
 # CARREGAMENTO DO DOCUMENTO
 # ==============================
@@ -20,7 +23,7 @@ def load_pdf(pdf_path: Path):
 def load_documents():
     """Carrega e prepara os documentos da pasta docs."""
     docs_dir = Path(__file__).resolve().parent.parent / "data" / "documents"
-    print(f"[INFO] Procurando PDFs em: {docs_dir}")
+    print_info(f"Procurando PDFs em: {docs_dir}")
     pdf_files = list(docs_dir.glob("*.pdf"))
     if not pdf_files:
         raise FileNotFoundError("Nenhum PDF encontrado na pasta docs.")
@@ -32,7 +35,7 @@ def load_documents():
 
     documents = clean_documents(documents)
 
-    print(f"[INFO] Total de páginas carregadas: {len(documents)}")
+    print_info(f"Total de páginas carregadas: {len(documents)}")
 
     return documents
 
@@ -55,6 +58,6 @@ def inspect_documents(documents):
 
     for i, doc in enumerate(documents, start=1):
 
-        print(f"\n========== PÁGINA {i} ==========")
+        print_section(f"\n========== PÁGINA {i} ==========")
 
-        print(repr(doc.page_content[:1000]))
+        print_info(repr(doc.page_content[:1000]))

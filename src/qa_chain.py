@@ -1,6 +1,7 @@
 from langchain.chains import RetrievalQA
 from langchain_ollama import ChatOllama
 from src.config import LLM_MODEL
+from src.helper.print_section import print_info
 
 
 # ==============================
@@ -12,6 +13,8 @@ def create_llm():
     return ChatOllama(
         model=LLM_MODEL,
         temperature=0,
+        reasoning=False,
+        num_ctx=8192,
     )
 
 
@@ -21,9 +24,9 @@ def create_llm():
 
 def build_qa_chain(retriever):
 
-    print("\n[INFO] Entrou em build_qa_chain()")
+    print_info("Entrou em build_qa_chain()")
     llm = create_llm()
-    print("[INFO] LLM criado com sucesso. Montando RetrievalQA...")
+    print_info("LLM criado com sucesso. Montando RetrievalQA...")
 
 
     qa_chain = RetrievalQA.from_chain_type(
@@ -32,14 +35,14 @@ def build_qa_chain(retriever):
         retriever=retriever,
         return_source_documents=True
     )
-    print("[SUCESSO] RetrievalQA criado com sucesso!")
+    print_info("[SUCESSO] RetrievalQA criado com sucesso!")
     return qa_chain
 
 
 def ask_and_print(qa_chain: RetrievalQA, pergunta: str):
     """Executa uma pergunta e apresenta a resposta."""
 
-    print("\n[INFO] Executando consulta...")
+    print_info("Executando consulta...")
 
     resposta = qa_chain.invoke({"query": pergunta})
 
