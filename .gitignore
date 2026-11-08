@@ -33,6 +33,9 @@ dist/
 .DS_Store
 Thumbs.db
 
-# Bancos vetoriais e dados gerados  
+# Bancos vetoriais e dados gerados
+data/vector_store/
 chroma_cover_letter/
-docs/
+
+# Documentos 
+data/documents/

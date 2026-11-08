@@ -19,7 +19,7 @@ def load_pdf(pdf_path: Path):
 
 def load_documents():
     """Carrega e prepara os documentos da pasta docs."""
-    docs_dir = Path(__file__).resolve().parent.parent / "docs"
+    docs_dir = Path(__file__).resolve().parent.parent / "data" / "documents"
     print(f"[INFO] Procurando PDFs em: {docs_dir}")
     pdf_files = list(docs_dir.glob("*.pdf"))
     if not pdf_files:

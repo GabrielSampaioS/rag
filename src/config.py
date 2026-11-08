@@ -4,9 +4,14 @@ from pathlib import Path
 # CONFIGURAÇÕES
 # ==============================
 
-BASE_DIR = (Path(__file__).resolve().parent/"docs")
-PDF_PATH = BASE_DIR / "CoverLetter.pdf"
-CHROMA_DIR = BASE_DIR / "chroma_cover_letter"
+# Raiz do projeto (diretório acima de src)
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Documentos
+PDF_PATH = BASE_DIR / "data" / "documents" / "CoverLetter.pdf"
+
+# Banco vetorial
+CHROMA_DIR = BASE_DIR / "data" / "vector_store" / "chroma"
 
 EMBEDDING_MODEL = "nomic-embed-text"
 LLM_MODEL = "qwen3.5:4b"

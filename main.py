@@ -12,8 +12,8 @@ def main():
     print("[1/4] Carregando documentos...")
     documents = load_documents()
     chunks = split_documents(documents)
-    show_chunk_info(documents, chunks)
-    return
+    #show_chunk_info(documents, chunks)
+  
 
     # 2. Criar embeddings
     print("[2/4] Preparando embeddings...")
@@ -41,7 +41,7 @@ def main():
             break
 
         ask_and_print(qa_chain, pergunta)
-
+    return
 
 if __name__ == "__main__":
     main()
